@@ -22,5 +22,4 @@ RUN echo 'norikra ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #
 EXPOSE 26571
 EXPOSE 26578
-#CMD ["/usr/local/jruby/bin/norikra", "start"]
-ENTRYPOINT ["/usr/local/jruby/bin/norikra", "start"]
+CMD ["/usr/local/jruby/bin/norikra", "start"]
