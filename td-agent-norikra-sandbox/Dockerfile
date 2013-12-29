@@ -24,6 +24,9 @@ ADD nginx.conf /etc/monit/conf.d/nginx.conf
 ADD norikra.conf /etc/monit/conf.d/norikra.conf
 ADD norikractl /usr/local/bin/norikractl
 RUN chmod +x /usr/local/bin/norikractl
+ADD monitrc /etc/monit/monitrc
+RUN chown root:root /etc/monit/monitrc
+RUN chmod 700 /etc/monit/monitrc
 #
 RUN mkdir -p /var/run/sshd
 RUN useradd -d /home/sandbox -m -s /bin/bash sandbox
@@ -39,4 +42,6 @@ EXPOSE 24220
 EXPOSE 24224
 # for nginx
 EXPOSE 80
+# for monit
+EXPOSE 2812
 CMD ["/usr/bin/monit", "-I", "-c", "/etc/monit/monitrc"]
