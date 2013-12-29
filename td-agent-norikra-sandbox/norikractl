@@ -1,0 +1,22 @@
+#!/bin/bash
+
+export PATH=$PATH:/usr/local/jruby/bin
+
+if [ ! -d /var/run/norikra ];then
+  mkdir /var/run/norikra
+else
+  echo ""
+fi
+
+case $1 in
+   start)
+      /usr/local/jruby/bin/norikra start &
+      sleep 3
+      ps ax | grep  \[j\]ava | awk '{print $1}' > /var/run/norikra/norikra.pid;
+      ;;
+    stop)
+      kill `cat /var/run/norikra/norikra.pid` ;;
+    *)
+      echo "usage: norikractl {start|stop}" ;;
+esac
+exit 0
