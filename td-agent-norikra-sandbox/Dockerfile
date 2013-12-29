@@ -1,4 +1,7 @@
+#
 FROM inokappa/wheezy-7.2-basic
+#
+MAINTAINER YOHEI KAWAHARA inokappa
 #
 RUN apt-get update
 RUN apt-get -y install build-essential wget openjdk-7-jdk libxslt1.1 libyaml-0-2 openssh-server sudo nginx monit
