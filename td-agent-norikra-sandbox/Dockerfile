@@ -22,17 +22,18 @@ ADD td-agent.conf.example /etc/td-agent/td-agent.conf
 ADD td-agent.conf /etc/monit/conf.d/td-agent.conf
 ADD nginx.conf /etc/monit/conf.d/nginx.conf
 ADD norikra.conf /etc/monit/conf.d/norikra.conf
-ADD norikractl /usr/local/bin/norikractl
-RUN chmod +x /usr/local/bin/norikractl
+RUN mv /etc/monit/monitrc.d/openssh-server /etc/monit/conf.d/openssh-server.conf
 ADD monitrc /etc/monit/monitrc
 RUN chown root:root /etc/monit/monitrc
 RUN chmod 700 /etc/monit/monitrc
+ADD norikractl /usr/local/bin/norikractl
+RUN chmod +x /usr/local/bin/norikractl
 #
 RUN mkdir -p /var/run/sshd
 RUN useradd -d /home/sandbox -m -s /bin/bash sandbox
 # Please change your password
 RUN echo sandbox:your_password | chpasswd
-RUN echo 'tdagent ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo 'sandbox ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #
 # for norikra
 EXPOSE 26571 
@@ -42,6 +43,8 @@ EXPOSE 24220
 EXPOSE 24224
 # for nginx
 EXPOSE 80
+# for ssh
+EXPOSE 22
 # for monit
 EXPOSE 2812
 CMD ["/usr/bin/monit", "-I", "-c", "/etc/monit/monitrc"]
