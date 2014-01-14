@@ -31,4 +31,8 @@ cat << EOF >> /etc/rabbitmq/rabbitmq.config
 ].
 EOF
 #
-/etc/init.d/rabbitmq-server start
+#/etc/init.d/rabbitmq-server start
+#
+#rabbitmqctl add_vhost /sensu
+#rabbitmqctl add_user sensu mypass
+#rabbitmqctl set_permissions -p /sensu sensu ".*" ".*" ".*"

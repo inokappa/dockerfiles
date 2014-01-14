@@ -9,20 +9,25 @@ RUN gem install json --no-ri --no-rdoc -V
 RUN puppet module install sensu/sensu
 ADD rabbitmq_install.sh /root/
 RUN chmod 755 /root/rabbitmq_install.sh && /root/rabbitmq_install.sh
-ADD site.pp /etc/puppet/manifests/
-RUN cd /etc/puppet && puppet apply --verbose manifests/site.pp
+#
+ADD puppet/site.pp /etc/puppet/manifests/
+ADD puppet/fileserver.conf /etc/puppet/
+RUN cd /etc/puppet && puppet apply manifests/site.pp
+#
 ADD config.json /etc/sensu/
+RUN mkdir /etc/sensu/ssl
+RUN cp /tmp/ssl_certs/client/cert.pem /etc/sensu/ssl/
+RUN cp /tmp/ssl_certs/client/key.pem /etc/sensu/ssl/
 #
 RUN mkdir -p /var/run/sshd
 RUN useradd -d /home/sandbox -m -s /bin/bash sandbox
-# Please change your password
 RUN echo sandbox:sandbox | chpasswd
 RUN echo 'sandbox ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #
 # for sensu dashboard
-EXPOSE 80
+#EXPOSE 8080
 # for ssh
-EXPOSE 22
+#EXPOSE 22
 # for monit
 #EXPOSE 2812
 #CMD ["/usr/bin/monit", "-I", "-c", "/etc/monit/monitrc"]
