@@ -26,9 +26,12 @@ node default {
     server => true,
     purge_config => true,
     rabbitmq_password => 'mypass',
-    rabbitmq_ssl_private_key => "puppet:///files/sensu/client_key.pem",
-    rabbitmq_ssl_cert_chain => "puppet:///files/sensu/client_cert.pem",
+    rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/key.pem",
+    rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/cert.pem",
     rabbitmq_host => 'localhost',
     subscriptions => 'sensu-test',
+  }
+  sensu::handler { 'default':
+    command => 'mail -s "sensu alert" hoge@huga.com',
   }
 }
