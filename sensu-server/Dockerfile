@@ -17,7 +17,6 @@ ADD puppet/fileserver.conf /etc/puppet/
 RUN cd /etc/puppet && puppet apply manifests/site.pp
 #
 ADD config.json /etc/sensu/
-#RUN mkdir /etc/sensu/ssl
 RUN cp /tmp/ssl_certs/client/cert.pem /etc/sensu/ssl/
 RUN cp /tmp/ssl_certs/client/key.pem /etc/sensu/ssl/
 #
@@ -26,8 +25,10 @@ RUN useradd -d /home/sandbox -m -s /bin/bash sandbox
 RUN echo sandbox:sandbox | chpasswd
 RUN echo 'sandbox ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #
+ADD start.sh /root/
+RUN chmod 755 /root/start.sh
 # for sensu dashboard
-#EXPOSE 8080
+EXPOSE 8080
 # for ssh
 #EXPOSE 22
 # for monit
