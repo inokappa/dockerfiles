@@ -1,4 +1,4 @@
-node mon1 {
+node default {
   file { '/etc/rabbitmq/ssl/key.pem':
     source => 'puppet:///files/sensu/key.pem',
   }
