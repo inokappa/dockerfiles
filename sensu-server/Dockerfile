@@ -31,6 +31,6 @@ RUN chmod 755 /root/start.sh
 EXPOSE 8080
 # for ssh
 #EXPOSE 22
-# for monit
+# for all process management via monit 
 #EXPOSE 2812
 #CMD ["/usr/bin/monit", "-I", "-c", "/etc/monit/monitrc"]
