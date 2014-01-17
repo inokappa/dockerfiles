@@ -9,10 +9,14 @@ RUN gem install json --no-ri --no-rdoc -V
 RUN puppet module install sensu/sensu
 ADD rabbitmq_certs_install.sh /root/
 RUN chmod 755 /root/rabbitmq_certs_install.sh && /root/rabbitmq_certs_install.sh
+RUN /root/rabbitmq_certs_install.sh
 #
 ADD puppet/site.pp /etc/puppet/manifests/
 ADD puppet/fileserver.conf /etc/puppet/
-RUN mkdir /etc/puppet/files/sensu
+RUN mkdir -p /etc/puppet/files/sensu
+RUN cp /tmp/ssl_certs/client/cert.pem /etc/puppet/files/sensu/
+RUN cp /tmp/ssl_certs/client/key.pem /etc/puppet/files/sensu/
+#
 RUN cd /etc/puppet && puppet apply manifests/site.pp
 #
 RUN cp /tmp/ssl_certs/client/cert.pem /etc/sensu/ssl/
