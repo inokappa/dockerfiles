@@ -3,7 +3,7 @@ node default {
     source => 'puppet:///mount_point/sensu/server/key.pem',
   }
   file { '/etc/rabbitmq/ssl/cert.pem':
-    source => 'puppet:///mount_point/sensu/server.cert.pem',
+    source => 'puppet:///mount_point/sensu/server/cert.pem',
   }
   file { '/etc/rabbitmq/ssl/cacert.pem':
     source => 'puppet:///mount_point/sensu/server/cacert.pem',
