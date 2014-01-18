@@ -1,4 +1,5 @@
 node default {
+  ###################################################################
   file { '/etc/rabbitmq/ssl/key.pem':
     source => 'puppet:///mount_point/sensu/server/key.pem',
   }
@@ -8,6 +9,28 @@ node default {
   file { '/etc/rabbitmq/ssl/cacert.pem':
     source => 'puppet:///mount_point/sensu/server/cacert.pem',
   }
+  ###################################################################
+
+  exec{'get_check-disk':
+    cwd     => "/etc/sensu/plugins/system/",
+    command => "/usr/bin/wget -q https://raw2.github.com/sensu/sensu-community-plugins/master/plugins/system/check-disk.rb",
+    creates => "/etc/sensu/plugins/system/check-disk.rb",
+  }
+  file{'/etc/sensu/plugins/system/check-disk.rb':
+    mode => 0755,
+    require => Exec["get_check-disk"],
+  }
+  #
+  exec{'get_check-load':
+    cwd     => "/etc/sensu/plugins/system/",
+    command => "/usr/bin/wget -q https://raw2.github.com/sensu/sensu-community-plugins/master/plugins/system/check-load.rb",
+    creates => "/etc/sensu/plugins/system/check-load.rb",
+   }
+  file{'/etc/sensu/plugins/system/check-load.rb':
+    mode => 0755,
+    require => Exec["get_check-load"],
+  }
+
   class { 'rabbitmq':
     ssl_key => '/etc/rabbitmq/ssl/key.pem',
     ssl_cert => '/etc/rabbitmq/ssl/cert.pem',
@@ -31,11 +54,24 @@ node default {
     rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/client/cert.pem",
     rabbitmq_host => 'localhost',
     subscriptions => 'sensu-test',
+    client_name => "${hostname}",
+    client_address => 'localhost'
   }
   package { 'nagios-plugins-basic': ensure => latest }
-    sensu::check { "cron":
-      handlers    => 'default',
-      command     => '/usr/lib/nagios/plugins/check_procs -C cron -c 1:10',
-      subscribers => 'sensu-test'
-    }
+  sensu::check { "cron":
+    handlers    => 'default',
+    command     => '/usr/lib/nagios/plugins/check_procs -C cron -c 1:10',
+    subscribers => 'sensu-test'
+  }
+  package { 'sensu-plugin': ensure => latest, provider => 'gem' }
+  sensu::check { "diskspace":
+    handlers    => 'default',
+    command => '/etc/sensu/plugins/system/check-disk.rb',
+    subscribers => 'sensu-test'
+  }
+  sensu::check { "loadaverage":
+    handlers    => 'default',
+    command => '/etc/sensu/plugins/system/check-load.rb',
+    subscribers => 'sensu-test'
+  }
 }

@@ -32,6 +32,8 @@ RUN chmod 755 /root/start.sh
 EXPOSE 8080
 # for rabbitmq
 EXPOSE 5671
+EXPOSE 15671
+EXPOSE 25671
 # for ssh
 #EXPOSE 22
 # for all process management via monit (in the future)
