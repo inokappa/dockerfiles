@@ -26,7 +26,7 @@ node default {
     rabbitmq_password => 'mypass',
     rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/key.pem",
     rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/cert.pem",
-    rabbitmq_host => '172.17.0.72',
+    rabbitmq_host => '',
     subscriptions => 'sensu-test',
     client_name => "${hostname}"
   }
