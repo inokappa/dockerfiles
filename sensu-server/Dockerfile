@@ -10,7 +10,8 @@ RUN puppet module install example42/redis
 RUN puppet module install puppetlabs/rabbitmq
 RUN puppet module install sensu/sensu
 ADD rabbitmq_install.sh /root/
-RUN chmod 755 /root/rabbitmq_install.sh && /root/rabbitmq_install.sh
+RUN chmod 755 /root/rabbitmq_install.sh
+RUN /root/rabbitmq_install.sh
 #
 ADD puppet/site.pp /etc/puppet/manifests/
 ADD puppet/fileserver.conf /etc/puppet/
@@ -29,6 +30,8 @@ ADD start.sh /root/
 RUN chmod 755 /root/start.sh
 # for sensu dashboard
 EXPOSE 8080
+# for rabbitmq
+EXPOSE 5671
 # for ssh
 #EXPOSE 22
 # for all process management via monit (in the future)

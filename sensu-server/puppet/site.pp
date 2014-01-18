@@ -1,12 +1,12 @@
 node default {
   file { '/etc/rabbitmq/ssl/key.pem':
-    source => 'puppet:///files/sensu/key.pem',
+    source => 'puppet:///mount_point/sensu/server/key.pem',
   }
   file { '/etc/rabbitmq/ssl/cert.pem':
-    source => 'puppet:///files/sensu/cert.pem',
+    source => 'puppet:///mount_point/sensu/server.cert.pem',
   }
   file { '/etc/rabbitmq/ssl/cacert.pem':
-    source => 'puppet:///files/sensu/cacert.pem',
+    source => 'puppet:///mount_point/sensu/server/cacert.pem',
   }
   class { 'rabbitmq':
     ssl_key => '/etc/rabbitmq/ssl/key.pem',
@@ -24,14 +24,18 @@ node default {
   class {'redis': }
   class {'sensu':
     server => true,
+    client => true,
     purge_config => true,
     rabbitmq_password => 'mypass',
-    rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/key.pem",
-    rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/cert.pem",
+    rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/client/key.pem",
+    rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/client/cert.pem",
     rabbitmq_host => 'localhost',
     subscriptions => 'sensu-test',
   }
-  sensu::handler { 'default':
-    command => 'mail -s "sensu alert" hoge@huga.com',
-  }
+  package { 'nagios-plugins-basic': ensure => latest }
+    sensu::check { "cron":
+      handlers    => 'default',
+      command     => '/usr/lib/nagios/plugins/check_procs -C cron -c 1:10',
+      subscribers => 'sensu-test'
+    }
 }
