@@ -1,0 +1,11 @@
+set daemon 30
+set logfile /var/log/monit.log
+set idfile /var/lib/monit/id
+set statefile /var/lib/monit/state
+set eventqueue
+    basedir /var/lib/monit/events 
+    slots 100                    
+set httpd port 2812 and
+  use address 0.0.0.0 
+  allow admin:monit      # please change 'monit'
+include /etc/monit/conf.d/*
