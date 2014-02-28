@@ -1,0 +1,2 @@
+LoadModule mruby_module       /usr/lib/apache2/modules/mod_mruby.so
+AddHandler mruby-script .mrb
