@@ -1,5 +1,8 @@
 node default {
   #
+  file { '/etc/sensu/plugins/system':
+    ensure => "directory",
+  }
   exec{'get_check-disk':
     cwd     => "/etc/sensu/plugins/system/",
     command => "/usr/bin/wget -q https://raw2.github.com/sensu/sensu-community-plugins/master/plugins/system/check-disk.rb",
@@ -26,7 +29,8 @@ node default {
     rabbitmq_password => 'mypass',
     rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/key.pem",
     rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/cert.pem",
-    rabbitmq_host => '',
+    rabbitmq_host => '172.17.0.2',
+    rabbitmq_port => '5671',
     subscriptions => 'sensu-test',
     client_name => "${hostname}"
   }
