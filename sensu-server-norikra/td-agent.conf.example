@@ -1,0 +1,37 @@
+<source>
+  type monitor_agent
+  bind 0.0.0.0
+  port 24220
+</source>
+
+<source>
+  type tail
+  format nginx
+  path /var/log/nginx/access.log
+  tag nginx.access
+  pos_file /tmp/fluentd.pos
+</source>
+
+<match nginx.*>
+  type copy
+
+  <store>
+    type file
+    path /tmp/test.log
+  </store>
+
+  <store>
+    type norikra
+    # Please change your norikra server's IP
+    norikra localhost:26571
+
+    target_map_tag yes
+    remove_tag_prefix nginx
+
+  </store>
+</match>
+
+
+<match norikra.**>
+  type stdout
+</match>
