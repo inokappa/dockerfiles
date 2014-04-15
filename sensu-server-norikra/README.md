@@ -1,4 +1,8 @@
-## Dockerfile for sensu-server
+## Dockerfile for sensu-server and norikra
+
+### 注意
+
+ * 作成中
 
 ### How to Use
 
