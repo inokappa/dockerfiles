@@ -21,11 +21,16 @@ RUN echo sshuser:sshuser | chpasswd
 RUN echo 'sshuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #
 RUN cd /root/ && git clone git://github.com/matsumoto-r/mod_mruby.git
-RUN cd /root/mod_mruby && sh build.sh
-RUN if [ -f /root/mod_mruby/src/.libs/mod_mruby.so ];then cp /root/mod_mruby/src/.libs/mod_mruby.so /usr/lib/apache2/modules/; fi
+RUN cd /root/mod_mruby && sh build.sh && make install
 ADD mruby.load /etc/apache2/mods-available/
+ADD mruby.conf /etc/apache2/mods-available/
 RUN ln -nfs /etc/apache2/mods-available/mruby.load /etc/apache2/mods-enabled/mruby.load
-ADD test.mrb /var/www/
+RUN ln -nfs /etc/apache2/mods-available/mruby.conf /etc/apache2/mods-enabled/mruby.conf
+RUN if [ -f /root/mod_mruby/test/test.rb ];then cp /root/mod_mruby/test/test.rb /var/www/ ; fi
+RUN if [ ! -d /etc/apache2/hooks ];then mkdir /etc/apache2/hooks ; fi
+ADD rewrite.rb /etc/apache2/hooks/
+ADD iphone.html /var/www/
+ADD android.html /var/www/
 #
 EXPOSE 80
 env APACHE_RUN_USER    www-data

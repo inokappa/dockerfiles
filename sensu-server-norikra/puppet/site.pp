@@ -1,8 +1,16 @@
 node default {
-  #
-  file { '/etc/sensu/plugins/system':
-    ensure => "directory",
+  ###################################################################
+  file { '/etc/rabbitmq/ssl/key.pem':
+    source => 'puppet:///mount_point/sensu/server/key.pem',
   }
+  file { '/etc/rabbitmq/ssl/cert.pem':
+    source => 'puppet:///mount_point/sensu/server/cert.pem',
+  }
+  file { '/etc/rabbitmq/ssl/cacert.pem':
+    source => 'puppet:///mount_point/sensu/server/cacert.pem',
+  }
+  ###################################################################
+
   exec{'get_check-disk':
     cwd     => "/etc/sensu/plugins/system/",
     command => "/usr/bin/wget -q https://raw2.github.com/sensu/sensu-community-plugins/master/plugins/system/check-disk.rb",
@@ -23,16 +31,31 @@ node default {
     require => Exec["get_check-load"],
   }
 
+  class { 'rabbitmq':
+    ssl_key => '/etc/rabbitmq/ssl/key.pem',
+    ssl_cert => '/etc/rabbitmq/ssl/cert.pem',
+    ssl_cacert => '/etc/rabbitmq/ssl/cacert.pem',
+    ssl => true,
+  }
+  rabbitmq_vhost { '/sensu': }
+  rabbitmq_user { 'sensu': password => 'mypass' }
+  rabbitmq_user_permissions { 'sensu@/sensu':
+    configure_permission => '.*',
+    read_permission => '.*',
+    write_permission => '.*',
+  }
+  class {'redis': }
   class {'sensu':
+    server => true,
     client => true,
     purge_config => true,
     rabbitmq_password => 'mypass',
-    rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/key.pem",
-    rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/cert.pem",
-    rabbitmq_host => '172.17.0.2',
-    rabbitmq_port => '5671',
+    rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/client/key.pem",
+    rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/client/cert.pem",
+    rabbitmq_host => 'localhost',
     subscriptions => 'sensu-test',
-    client_name => "${hostname}"
+    client_name => "${hostname}",
+    client_address => 'localhost'
   }
   package { 'nagios-plugins-basic': ensure => latest }
   sensu::check { "cron":
