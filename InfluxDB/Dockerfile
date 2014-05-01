@@ -1,6 +1,6 @@
 FROM centos
 MAINTAINER YOHEI KAWAHARA inokappa
-RUN yum -y install sudo openssh-server
+RUN yum -y install wget sudo openssh-server
 RUN cd /tmp/ && wget http://s3.amazonaws.com/influxdb/influxdb-latest-1.x86_64.rpm
 RUN cd /tmp/ && rpm -ivh influxdb-latest-1.x86_64.rpm
 #
