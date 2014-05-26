@@ -10,12 +10,10 @@ RUN rpm --import http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/RPM
 RUN cd /tmp/ && wget http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
 RUN cd /tmp/ && rpm -Uvh epel-release-6-8.noarch.rpm
 #
-RUN yum -y install graphite-web graphite-web-selinux mysql mysql-server MySQL-python python-carbon monit vim telnet expect
+RUN yum -y install graphite-web mysql mysql-server MySQL-python python-carbon monit vim telnet expect
 #
 ADD graphite/local_settings.py /etc/graphite-web/local_settings.py
 ADD graphite/initial_data.json /etc/graphite-web/initial_data.json
-ADD graphite/syncdb.sh /tmp/syncdb.sh
-RUN chmod 755 /tmp/syncdb.sh
 #
 RUN /etc/init.d/mysqld start && \
   mysql -e "CREATE USER 'graphite'@'localhost' IDENTIFIED BY 'passw0rd';" -u root && \
@@ -27,10 +25,6 @@ RUN /etc/init.d/mysqld start && \
   /usr/lib/python2.6/site-packages/graphite/manage.py syncdb --noinput && \
   sleep 1
 #
-RUN mkdir -p /usr/lib/python2.6/storage/log/webapp
-RUN mkdir -p /usr/lib/python2.6/storage/whisper
-RUN cd /usr/lib/python2.6/ && chown -R apache:apache storage
-##
 ADD monit/monit.conf /etc/monit.conf
 RUN chown root:root /etc/monit.conf && chmod 600 /etc/monit.conf
 ADD monit/httpd /etc/monit.d/
