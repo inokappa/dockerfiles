@@ -23,7 +23,8 @@ RUN /etc/init.d/mysqld start && \
   mysql -e "CREATE DATABASE graphite;" -u root && \
   mysql -e 'FLUSH PRIVILEGES;' -u root && \
   export LANG="en_US.UTF-8" && \
-  /tmp/syncdb.sh && \
+  cd /etc/graphite-web && \
+  /usr/lib/python2.6/site-packages/graphite/manage.py syncdb --noinput && \
   sleep 1
 #
 RUN mkdir -p /usr/lib/python2.6/storage/log/webapp
