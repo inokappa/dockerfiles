@@ -1,0 +1,6 @@
+check process httpd with pidfile /var/run/httpd/httpd.pid
+  start program = "/etc/init.d/httpd start" with timeout 60 seconds
+  stop program  = "/etc/init.d/httpd stop"
+  if failed port 80 protocol http
+    then restart
+  group apache
