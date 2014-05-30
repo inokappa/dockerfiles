@@ -1,3 +1,4 @@
+TIME_ZONE = 'Asia/Tokyo'
 GRAPHITE_ROOT = '/usr/share/graphite'
 #
 CONF_DIR = '/etc/graphite-web'
