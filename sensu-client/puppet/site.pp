@@ -24,24 +24,27 @@ node default {
   }
 
   class {'sensu':
+    sensu_plugin_version => installed,
+    use_embedded_ruby => true,
+    manage_services => false,
     client => true,
     purge_config => true,
     rabbitmq_password => 'mypass',
-    rabbitmq_ssl_private_key => "puppet:///mount_point/sensu/key.pem",
-    rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/cert.pem",
-    rabbitmq_host => '172.17.0.2',
-    rabbitmq_port => '5671',
+    rabbitmq_host => 'your rabbitmq ip address',
+    rabbitmq_port => '5672',
     rabbitmq_vhost => '/sensu',
-    subscriptions => 'sensu-test',
-    client_name => "${hostname}"
+    subscriptions => 'test',
+    client_name => "${fqdn}",
+    client_address => "${ipaddress}",
+    safe_mode => true
   }
-  package { 'nagios-plugins-basic': ensure => latest }
+  #package { 'nagios-plugins-basic': ensure => latest }
   sensu::check { "cron":
     handlers    => 'default',
     command     => '/usr/lib/nagios/plugins/check_procs -C cron -c 1:10',
     subscribers => 'sensu-test'
   }
-  package { 'sensu-plugin': ensure => latest, provider => 'gem' }
+  #package { 'sensu-plugin': ensure => latest, provider => 'gem'; }
   sensu::check { "diskspace":
     handlers    => 'default',
     command => '/etc/sensu/plugins/system/check-disk.rb',
