@@ -7,9 +7,8 @@ RUN apt-get update
 RUN apt-get -y install build-essential wget sudo ruby1.9.3 rubygems redis-server erlang-nox puppet openssh-server
 RUN gem install json --no-ri --no-rdoc -V
 RUN puppet module install sensu/sensu
-ADD rabbitmq_certs_install.sh /root/
-RUN chmod 755 /root/rabbitmq_certs_install.sh && /root/rabbitmq_certs_install.sh
-RUN /root/rabbitmq_certs_install.sh
+ADD rabbitmq_certs_install_client.sh /root/
+RUN chmod 755 /root/rabbitmq_certs_install_client.sh && /root/rabbitmq_certs_install_client.sh
 #
 ADD puppet/site.pp /etc/puppet/manifests/
 ADD puppet/fileserver.conf /etc/puppet/
