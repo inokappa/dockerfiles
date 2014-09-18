@@ -31,6 +31,7 @@ node default {
     rabbitmq_ssl_cert_chain => "puppet:///mount_point/sensu/cert.pem",
     rabbitmq_host => '172.17.0.2',
     rabbitmq_port => '5671',
+    rabbitmq_vhost => '/sensu',
     subscriptions => 'sensu-test',
     client_name => "${hostname}"
   }
