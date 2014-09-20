@@ -22,6 +22,16 @@ node default {
     mode => 0755,
     require => Exec["get_check-load"],
   }
+  exec{'get_disk-metrics':
+    cwd     => "/etc/sensu/plugins/system/",
+    command => "/usr/bin/wget -q https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/disk-metrics.rb",
+    creates => "/etc/sensu/plugins/system/disk-metrics.rb",
+   }
+  file{'/etc/sensu/plugins/system/disk-metrics.rb':
+    mode => 0755,
+    require => Exec["get_disk-metrics"],
+  }
+
 
   class {'sensu':
     sensu_plugin_version => installed,
@@ -38,13 +48,11 @@ node default {
     client_address => "${ipaddress}",
     safe_mode => true
   }
-  #package { 'nagios-plugins-basic': ensure => latest }
   sensu::check { "cron":
     handlers    => 'default',
     command     => '/usr/lib/nagios/plugins/check_procs -C cron -c 1:10',
     subscribers => 'sensu-test'
   }
-  #package { 'sensu-plugin': ensure => latest, provider => 'gem'; }
   sensu::check { "diskspace":
     handlers    => 'default',
     command => '/etc/sensu/plugins/system/check-disk.rb',
@@ -53,6 +61,12 @@ node default {
   sensu::check { "loadaverage":
     handlers    => 'default',
     command => '/etc/sensu/plugins/system/check-load.rb',
+    subscribers => 'sensu-test'
+  }
+  sensu::check { "disk-metrics":
+    type => 'metrics'
+    handlers => ["datadog" , "graphite"],
+    command => '/etc/sensu/plugins/system/disk-metrics.rb',
     subscribers => 'sensu-test'
   }
 }
