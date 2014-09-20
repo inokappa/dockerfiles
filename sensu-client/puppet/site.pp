@@ -65,7 +65,7 @@ node default {
   }
   sensu::check { "disk-metrics":
     type => 'metrics'
-    handlers => ["datadog" , "graphite"],
+    handlers => ['datadog' , 'graphite'],
     command => '/etc/sensu/plugins/system/disk-metrics.rb',
     subscribers => 'sensu-test'
   }
