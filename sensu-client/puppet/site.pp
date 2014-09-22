@@ -22,6 +22,16 @@ node default {
     mode => 0755,
     require => Exec["get_check-load"],
   }
+  exec{'get_check-ram':
+    cwd     => "/etc/sensu/plugins/system/",
+    command => "/usr/bin/wget -q https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/check-ram.rb",
+    creates => "/etc/sensu/plugins/system/check-load.rb",
+   }
+  file{'/etc/sensu/plugins/system/check-ram.rb':
+    mode => 0755,
+    require => Exec["get_check-ram"],
+  }
+  #
   exec{'get_disk-metrics':
     cwd     => "/etc/sensu/plugins/system/",
     command => "/usr/bin/wget -q https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/disk-metrics.rb",
@@ -31,7 +41,26 @@ node default {
     mode => 0755,
     require => Exec["get_disk-metrics"],
   }
-
+  #
+  exec{'get_vmstat-metrics':
+    cwd     => "/etc/sensu/plugins/system/",
+    command => "/usr/bin/wget -q https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/vmstat-metrics.rb",
+    creates => "/etc/sensu/plugins/system/vmstat-metrics.rb",
+   }
+  file{'/etc/sensu/plugins/system/vmstat-metrics.rb':
+    mode => 0755,
+    require => Exec["get_vmstat-metrics"],
+  }
+  #
+  exec{'get_memory-metrics.rb':
+    cwd     => "/etc/sensu/plugins/system/",
+    command => "/usr/bin/wget -q https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/memory-metrics.rb",
+    creates => "/etc/sensu/plugins/system/memory-metrics.rb",
+   }
+  file{'/etc/sensu/plugins/system/memory-metrics.rb':
+    mode => 0755,
+    require => Exec["get_memory-metrics.rb"],
+  }
 
   class {'sensu':
     sensu_plugin_version => installed,
@@ -48,25 +77,31 @@ node default {
     client_address => "${ipaddress}",
     safe_mode => true
   }
-  sensu::check { "cron":
-    handlers    => 'default',
-    command     => '/usr/lib/nagios/plugins/check_procs -C cron -c 1:10',
-    subscribers => 'sensu-test'
-  }
   sensu::check { "diskspace":
     handlers    => 'default',
-    command => '/etc/sensu/plugins/system/check-disk.rb',
-    subscribers => 'sensu-test'
+    command => '/etc/sensu/plugins/system/check-disk.rb'
   }
   sensu::check { "loadaverage":
     handlers    => 'default',
-    command => '/etc/sensu/plugins/system/check-load.rb',
-    subscribers => 'sensu-test'
+    command => '/etc/sensu/plugins/system/check-load.rb'
+  }
+  sensu::check { "memory":
+    handlers    => 'default',
+    command => '/etc/sensu/plugins/system/check-ram.rb'
   }
   sensu::check { "disk-metrics":
-    type => 'metrics',
-    handlers => ['datadog','graphite'],
-    command => '/etc/sensu/plugins/system/disk-metrics.rb',
-    subscribers => 'sensu-test'
+    type => 'metric',
+    handlers => ['datadog' , 'graphite'],
+    command => '/etc/sensu/plugins/system/disk-metrics.rb'
+  }
+  sensu::check { "vmstat-metrics":
+    type => 'metric',
+    handlers => ['datadog' , 'graphite'],
+    command => '/etc/sensu/plugins/system/vmstat-metrics.rb'
+  }
+  sensu::check { "memory-metrics":
+    type => 'metric',
+    handlers => ['datadog' , 'graphite'],
+    command => '/etc/sensu/plugins/system/memory-metrics.rb'
   }
 }
