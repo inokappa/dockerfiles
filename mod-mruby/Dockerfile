@@ -1,4 +1,4 @@
-FROM inokappa/wheezy-7.2-basic
+FROM debian
 #
 MAINTAINER YOHEI KAWAHARA inokappa
 #
@@ -14,6 +14,7 @@ RUN apt-get -y install libhiredis-dev
 RUN apt-get -y install libmarkdown2-dev
 RUN apt-get -y install libcap-dev
 RUN apt-get -y install libcgroup-dev
+RUN apt-get -y install libssl-dev
 #
 RUN mkdir -p /var/run/sshd
 RUN useradd -d /home/sshuser -m -s /bin/bash sshuser
@@ -29,6 +30,7 @@ RUN ln -nfs /etc/apache2/mods-available/mruby.conf /etc/apache2/mods-enabled/mru
 RUN if [ -f /root/mod_mruby/test/test.rb ];then cp /root/mod_mruby/test/test.rb /var/www/ ; fi
 RUN if [ ! -d /etc/apache2/hooks ];then mkdir /etc/apache2/hooks ; fi
 ADD rewrite.rb /etc/apache2/hooks/
+ADD handler.rb /etc/apache2/hooks/
 ADD iphone.html /var/www/
 ADD android.html /var/www/
 #
